@@ -1,10 +1,11 @@
-"""initial models
+"""add in user fallowing and fallowers
 
-Revision ID: 431a9134fde7
-Revises: 
-Create Date: 2024-11-13 15:44:33.429518
+Revision ID: 33c1739137f5
+Revises: c8fd9a3dd9a6
+Create Date: 2024-11-13 17:19:45.413913
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,8 +13,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '431a9134fde7'
-down_revision: Union[str, None] = None
+revision: str = "33c1739137f5"
+down_revision: Union[str, None] = "c8fd9a3dd9a6"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
