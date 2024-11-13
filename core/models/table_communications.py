@@ -8,10 +8,10 @@ from .base import Base
 
 
 class UserLikeTweet(Base):
-    user_id: Mapped[int] = mapped_column(ForeignKey("User.id"))
-    tweet_id: Mapped[int] = mapped_column(ForeignKey("User.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    tweet_id: Mapped[int] = mapped_column(ForeignKey("tweet.id"))
 
 
 class UserFallow(Base):
-    follower_id: Mapped[int] = mapped_column(ForeignKey("User.id"))
-    autor_id: Mapped[int] = mapped_column(ForeignKey("User.id"))
+    follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    autor_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
