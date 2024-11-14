@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from .config import config
 
 
-class DBsettings:
+class DBSettings:
     def __init__(self, db_url: str, echo: bool = False):
         self.engine = create_async_engine(echo=echo, url=db_url)
         self.session_factory = async_sessionmaker(
@@ -18,4 +18,4 @@ class DBsettings:
             await session.close()
 
 
-db_settings = DBsettings(db_url=config.db_url)
+db_settings = DBSettings(db_url=config.db_url)
