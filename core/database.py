@@ -13,6 +13,9 @@ class DBsettings:
         )
 
     async def session(self) -> AsyncSession:
-        with self.session_factory() as session:
+        async with self.session_factory() as session:
             yield session
             await session.close()
+
+
+db_settings = DBsettings(db_url=config.db_url)
