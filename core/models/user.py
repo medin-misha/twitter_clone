@@ -10,6 +10,7 @@ from .base import Base
 
 class User(Base):
     name: Mapped[str] = mapped_column(String(100), unique=True)
+    key: Mapped[str]
 
     following_ids: Mapped[List[int]] = relationship(
         back_populates="autor_id",
@@ -22,7 +23,6 @@ class User(Base):
         secondaryjoin="user.id == userfollow.follower_id",
     )
 
-    # followers_ids: Mapped[List[int]] = mapped_column(ForeignKey("userfallow.follower_id"))
     liked_tweets: Mapped[List["Tweet"]] = relationship(
         back_populates="liked_users", uselist=True, secondary="userliketweet"
     )
