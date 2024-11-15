@@ -16,20 +16,7 @@ async def read_root():
     return HTMLResponse(content=html_content)
 
 
-@app.get("/api/users/me")
-async def func():
-    return {
-        "result": "true",
-        "user": {
-            "id": "int",
-            "name": "str",
-            "followers": [{"id": "int", "name": "str"}],
-            "following": [{"id": "int", "name": "str"}],
-        },
-    }
-
-
-app.mount("/static", StaticFiles(directory="static/"), name="static")
+app.mount("/", StaticFiles(directory="static/"), name="static")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=8977)
