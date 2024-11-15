@@ -6,7 +6,8 @@ def error_response(msg: str, err_type: int) -> dict[str, bool | str]:
     return response
 
 
-def ok_response(resp: dict[Any]) -> dict[bool, Any]:
+def ok_response(
+    resp: dict[Any] | list, name: str
+) -> dict[str, bool | dict[Any] | list]:
     response = {"result": True}
-    response.update(resp)
-    return response
+    return response | {f"{name}": resp}
