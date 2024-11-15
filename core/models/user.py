@@ -9,8 +9,8 @@ from .base import Base
 
 
 class User(Base):
-    name: Mapped[str] = mapped_column(String(100), unique=True)
-    key: Mapped[str]
+    name: Mapped[str] = mapped_column(String(100))
+    key: Mapped[str] = mapped_column(unique=True)
 
     following_ids: Mapped[List[int]] = relationship(
         back_populates="autor_id",
