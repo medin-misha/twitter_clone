@@ -1,19 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from typing import Any, Callable, Type
 from core import Image, User, Tweet
 from .schemes import CreateUser
 
 
-async def create_user(
-    session: AsyncSession,
-    user: CreateUser,
-) -> Callable:
-    """
-    функция которая должна создавать запись в таблице user
-    """
-    creating_object = User(**user.model_dump())
-    async with session.begin():
-        session.add(creating_object)
-        await session.commit()
-    await session.refresh(creating_object)
-    return creating_object
+async def get_by_api_key(session: AsyncSession, api_key: str) -> dict:
+    stmt = select(User.__table__._columns.name, User.__table__._columns.id).where(
+        User.key == api_key
+    )
+    select_result = await session.execute(stmt)
+    return select_result.mappings().one_or_none()
