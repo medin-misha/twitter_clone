@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Callable
+from sqlalchemy import select, Result, delete
+from sqlalchemy.dialects.postgresql import insert
+from typing import Callable, List, Any
 from core import Image, User, Tweet
 
 
@@ -7,28 +9,37 @@ async def create(
     session: AsyncSession,
     model: Image | User | Tweet,
     data: dict,
-) -> Callable:
-    print(model.__table__)
-    creating_object = model(
-        **data
-    )
+) -> dict[Any]:
+    stmt = insert(model.__table__).values(name=data.get("name"), key=data.get("key"))
     async with session.begin():
-        session.add(creating_object)
+        await session.execute(stmt)
         await session.commit()
-    await session.refresh(creating_object)
-    return creating_object
+    select_stmt = select(model.__table__).where(model.key == data.get("key"))
+    select_result: Result = await session.execute(select_stmt)
+    return dict(select_result.mappings().one())
 
 
-async def delete(
+async def get_by_id(
+    session: AsyncSession, model: Image | User | Tweet, id: int
+) -> dict | None:
+    stmt = select(model.__table__._columns).where(model.id == id)
+    select_result: Result = await session.execute(stmt)
+    return select_result.mappings().one_or_none()
+
+
+async def get_list(session: AsyncSession, model: Image | User | Tweet) -> List[dict]:
+    stmt = select(model.__table__).order_by(model.name)
+    select_result: Result = await session.execute(stmt)
+    return select_result.mappings().all()
+
+
+async def remove(
     session: AsyncSession,
     model: Image | User | Tweet,
     id: int,
-) -> bool:
-    deleting_object = await session.get(model, id)
-    if deleting_object is None:
-        return False
+) -> None:
+    stmt = delete(model.__table__).where(model.id == id)
 
     async with session.begin():
-        await session.delete(deleting_object)
+        await session.execute(stmt)
         await session.commit()
-    return True
