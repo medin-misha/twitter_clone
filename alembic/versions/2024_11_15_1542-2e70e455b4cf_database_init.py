@@ -1,8 +1,8 @@
-"""database
+"""database init
 
-Revision ID: 713a11fe3d80
+Revision ID: 2e70e455b4cf
 Revises: 
-Create Date: 2024-11-14 18:08:02.187206
+Create Date: 2024-11-15 15:42:59.550776
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '713a11fe3d80'
+revision: str = '2e70e455b4cf'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +25,7 @@ def upgrade() -> None:
     sa.Column('key', sa.String(), nullable=False),
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.UniqueConstraint('key')
     )
     op.create_table('tweet',
     sa.Column('content', sa.String(), nullable=False),
