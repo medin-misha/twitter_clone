@@ -5,7 +5,7 @@ from core import Image, User, Tweet
 from .schemes import CreateUser
 
 
-async def get_by_api_key(session: AsyncSession, api_key: str) -> dict:
+async def get_by_api_key(session: AsyncSession, api_key: str) -> dict | None:
     stmt = select(User.__table__._columns.name, User.__table__._columns.id).where(
         User.key == api_key
     )

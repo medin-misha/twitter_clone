@@ -1,9 +1,16 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from core import db_settings, User
-from handlers import create, remove, get_list, get_by_id, ok_response, error_response
+from handlers import (
+    create,
+    remove,
+    get_list,
+    get_by_id,
+    ok_response,
+    error_response,
+    get_user_by_api_key,
+)
 from .schemes import CreateUser
-from .utils import get_by_api_key
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
@@ -23,7 +30,7 @@ async def auth_user_view(
     api_key = request.headers.get("api-key")
     if api_key == "test":
         return {"result": True, "user": {"id": "int", "name": "str"}}
-    user = await get_by_api_key(session=session, api_key=api_key)
+    user = await get_user_by_api_key(session=session, api_key=api_key)
     return ok_response(resp=user, name="user")
 
 
