@@ -9,11 +9,12 @@ from .base import Base
 
 
 class Tweet(Base):
+    __tablename__ = "tweets"
+    id: Mapped[int] = mapped_column(primary_key=True)
     content: Mapped[str]
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-
-    liked_users: Mapped[List["User"]] = relationship(
-        back_populates="liked_tweets", uselist=True, secondary="userliketweet"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    autor: Mapped["User"] = relationship(
+        back_populates="tweets", uselist=False, lazy="select"
     )
-    autor: Mapped["User"] = relationship(back_populates="tweets", uselist=False)
-    attachments: Mapped[List["Image"]] = relationship(uselist=True)
+    attachments: Mapped[List["Image"]] = relationship(uselist=True, lazy="joined")
+
