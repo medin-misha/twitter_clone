@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, Result, delete
+from sqlalchemy.orm import selectinload
 from sqlalchemy.dialects.postgresql import insert
 from typing import Callable, List, Any
 from core import Image, User, Tweet
@@ -10,13 +11,10 @@ async def create(
     model: Image | User | Tweet,
     data: dict,
 ) -> dict[Any]:
-    stmt = insert(model.__table__).values(name=data.get("name"), key=data.get("key"))
-    async with session.begin():
-        await session.execute(stmt)
-        await session.commit()
-    select_stmt = select(model.__table__).where(model.key == data.get("key"))
-    select_result: Result = await session.execute(select_stmt)
-    return dict(select_result.mappings().one())
+    stmt = insert(model.__table__).values(**data).returning(model.__table__)
+    stmt_result: Result = await session.execute(stmt)
+    await session.commit()
+    return dict(stmt_result.mappings().one())
 
 
 async def get_by_id(
@@ -28,7 +26,7 @@ async def get_by_id(
 
 
 async def get_list(session: AsyncSession, model: Image | User | Tweet) -> List[dict]:
-    stmt = select(model.__table__).order_by(model.name)
+    stmt = select(model).options(selectinload("*")).order_by(model.id)
     select_result: Result = await session.execute(stmt)
     return select_result.mappings().all()
 
@@ -40,6 +38,14 @@ async def remove(
 ) -> None:
     stmt = delete(model.__table__).where(model.id == id)
 
-    async with session.begin():
-        await session.execute(stmt)
-        await session.commit()
+
+    await session.execute(stmt)
+    await session.commit()
+
+
+async def get_user_by_api_key(session: AsyncSession, api_key: str) -> dict | None:
+    stmt = select(User.__table__._columns.name, User.__table__._columns.id).where(
+        User.key == api_key
+    )
+    select_result = await session.execute(stmt)
+    return select_result.mappings().one_or_none()

@@ -7,7 +7,7 @@ def error_response(msg: str, err_type: int) -> dict[str, bool | str]:
 
 
 def ok_response(
-    resp: dict[Any] | list, name: str
-) -> dict[str, bool | dict[Any] | list]:
+    resp: Any, name: str
+) -> dict[str, bool | Any]:
     response = {"result": True}
-    return response | {f"{name}": resp}
+    return response | {f"{name}": resp} if resp is not None else response
