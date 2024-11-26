@@ -20,7 +20,7 @@ async def create(
 async def get_by_id(
     session: AsyncSession, model: Image | User | Tweet, id: int
 ) -> dict | None:
-    stmt = select(model.__table__._columns).where(model.id == id)
+    stmt = select(model).options(selectinload("*")).where(model.id == id)
     select_result: Result = await session.execute(stmt)
     return select_result.mappings().one_or_none()
 
@@ -37,7 +37,6 @@ async def remove(
     id: int,
 ) -> None:
     stmt = delete(model.__table__).where(model.id == id)
-
 
     await session.execute(stmt)
     await session.commit()

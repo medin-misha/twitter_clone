@@ -7,6 +7,11 @@ class User(BaseModel):
     name: str
 
 
+class UserLike(BaseModel):
+    user_id: PositiveInt
+    name: str
+
+
 class BaseTweet(BaseModel):
     id: int
     tweet_data: str
@@ -22,4 +27,4 @@ class ReturnTweet(BaseModel):
     content: str
     attachments: List[str] | None
     author: User
-    # likes: List[User] | None
+    likes: List[UserLike] | None

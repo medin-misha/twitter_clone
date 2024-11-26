@@ -1,13 +1,51 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, Result
+from sqlalchemy.orm import selectinload
 from typing import Any, Callable, Type
-from core import Image, User, Tweet
-from .schemes import CreateUser
+from core import Image, User, Tweet, UserFallow
+from handlers import create, remove
+from .schemes import CreateUser, OneUser
 
 
-async def get_by_api_key(session: AsyncSession, api_key: str) -> dict | None:
-    stmt = select(User.__table__._columns.name, User.__table__._columns.id).where(
-        User.key == api_key
+async def following(session: AsyncSession, author_id: int, follower_id: int) -> bool:
+    search_following_stmt = (
+        select(UserFallow.id)
+        .where(UserFallow.follower_id == follower_id)
+        .where(
+            UserFallow.autor_id == author_id,
+        )
     )
-    select_result = await session.execute(stmt)
-    return select_result.mappings().one_or_none()
+    search_followr_result: Result = await session.execute(search_following_stmt)
+    following_id = search_followr_result.scalars().all()
+    if len(following_id) != 0:
+        await remove(session=session, model=UserFallow, id=following_id[0])
+        return False
+    await create(
+        session=session,
+        model=UserFallow,
+        data={"autor_id": author_id, "follower_id": follower_id},
+    )
+    return True
+
+
+async def get_user_by_id(session: AsyncSession, id: int):
+    result = await session.execute(
+        select(User)
+        .options(selectinload(User.followers))
+        .options(selectinload(User.following))
+        .where(User.id == id)
+    )
+    user = result.scalar()
+    if user is None:
+        return None
+
+    return OneUser(
+        id=user.id,
+        name=user.name,
+        followers=[
+            {"id": follower.id, "name": follower.name} for follower in user.followers
+        ],
+        following=[
+            {"id": following.id, "name": following.name} for following in user.following
+        ],
+    )

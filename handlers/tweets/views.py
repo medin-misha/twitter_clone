@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional, List, Any, Dict
+from typing import List, Dict
 import json
 from handlers import (
     create,
@@ -11,9 +11,9 @@ from handlers import (
     get_user_by_api_key,
     get_by_id,
 )
-from core import Tweet, db_settings
+from core import Tweet, db_settings, UserLikeTweet
 from .shemas import CreateTweet, ReturnTweet
-from .utils import image_to_tweet, get_tweets
+from .utils import image_to_tweet, get_tweets, like_tweet
 
 router = APIRouter(prefix="/api/tweets", tags=["tweet"])
 
@@ -27,7 +27,7 @@ async def create_tweet_view(
     user = await get_user_by_api_key(session=session, api_key=user_key)
 
     if user is None:
-        return error_response(msg="auth error", err_type="401")
+        return error_response(msg="auth error ._.", err_type=401)
 
     tweet = await create(
         session=session,
@@ -51,17 +51,35 @@ async def get_tweet_view(
     return ok_response(resp=tweets, name="tweets")
 
 
+@router.api_route("/{id}/likes", methods=["POST", "DELETE"])
+async def like_tweet_view(
+    id: int, request: Request, session: AsyncSession = Depends(db_settings.session)
+) -> Dict[str, bool | str | int]:
+    user_key = request.headers.get("api-key")
+    user = await get_user_by_api_key(session=session, api_key=user_key)
+    if user is None:
+        return error_response(msg="auth error ._.", err_type=401)
+    liked_tweet = await like_tweet(session=session, tweet_id=id, user_id=user.get("id"))
+    return (
+        ok_response()
+        if liked_tweet
+        else error_response(msg="like delete (ツ)_/¯", err_type=400)
+    )
+
+
 @router.delete("/{id}")
 async def delete_tweet_view(
     id: int, request: Request, session: AsyncSession = Depends(db_settings.session)
-):
-    user = await get_user_by_api_key(
-        session=session, api_key=request.headers.get("api-key")
-    )
+) -> Dict[str, bool | str | int]:
+    user_key = request.headers.get("api-key")
+    user = await get_user_by_api_key(session=session, api_key=user_key)
     if user is None:
-        return error_response(msg="auth error", err_type=401)
+        return error_response(msg="auth error ._.", err_type=401)
+
     tweet = await get_by_id(session=session, model=Tweet, id=id)
     if user.get("id") == tweet.get("user_id"):
         await remove(session=session, model=Tweet, id=id)
         return ok_response(resp=None, name=None)
-    return error_response(msg="don't infringe on other users' tweets", err_type=401)
+    return error_response(
+        msg="don't infringe on other users' tweets (＃＞＜) ", err_type=401
+    )
