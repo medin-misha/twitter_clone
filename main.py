@@ -16,7 +16,7 @@ async def main():
     return FileResponse("./static/index.html")
 
 
-app.mount("/static", StaticFiles(directory="./static/"), name="static")
+app.mount("/", StaticFiles(directory="./static/"), name="static")
 
 
 @app.get("/{filename}")
