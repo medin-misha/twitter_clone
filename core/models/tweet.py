@@ -17,4 +17,6 @@ class Tweet(Base):
         back_populates="tweets", uselist=False, lazy="select"
     )
     attachments: Mapped[List["Image"]] = relationship(uselist=True, lazy="joined")
-
+    likes: Mapped[list["User"]] = relationship(
+        back_populates="likes", uselist=True, secondary="usersliketweets"
+    )

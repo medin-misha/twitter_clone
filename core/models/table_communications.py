@@ -14,16 +14,8 @@ class UserLikeTweet(Base):
     tweet_id: Mapped[int] = mapped_column(ForeignKey("tweets.id"))
 
 
-#     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-#     tweet_id: Mapped[int] = mapped_column(ForeignKey("tweet.id"))
-#
-#
 class UserFallow(Base):
     __tablename__ = "usersfallows"
     id: Mapped[int] = mapped_column(primary_key=True)
     follower_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     autor_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-
-
-#     follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-#     autor_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
