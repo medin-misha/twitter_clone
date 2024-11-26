@@ -1,4 +1,13 @@
-__all__ = ("Base", "Image", "User", "Tweet", "config", "db_settings")
+__all__ = (
+    "Base",
+    "Image",
+    "User",
+    "Tweet",
+    "config",
+    "db_settings",
+    "UserFallow",
+    "UserLikeTweet",
+)
 
 
 from .config import config
