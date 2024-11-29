@@ -12,7 +12,7 @@ class Tweet(Base):
     __tablename__ = "tweets"
     id: Mapped[int] = mapped_column(primary_key=True)
     content: Mapped[str]
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     autor: Mapped["User"] = relationship(
         back_populates="tweets", uselist=False, lazy="select"
     )
