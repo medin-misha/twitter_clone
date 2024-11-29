@@ -13,7 +13,6 @@ class UserLike(BaseModel):
 
 
 class BaseTweet(BaseModel):
-    id: int
     tweet_data: str
     tweet_media_ids: List[int] | None
 

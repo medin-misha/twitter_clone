@@ -18,12 +18,13 @@ from .utils import image_to_tweet, get_tweets, like_tweet
 router = APIRouter(prefix="/api/tweets", tags=["tweet"])
 
 
-@router.post("")
+@router.post("/")
 async def create_tweet_view(
-    request: Request, session: AsyncSession = Depends(db_settings.session)
+    tweet_data: CreateTweet,
+    request: Request,
+    session: AsyncSession = Depends(db_settings.session),
 ) -> Dict[str, bool | int] | Dict[str, str | int]:
     user_key: str = request.headers.get("api-key")
-    body: CreateTweet = json.loads(await request.body())
     user = await get_user_by_api_key(session=session, api_key=user_key)
 
     if user is None:
@@ -32,12 +33,12 @@ async def create_tweet_view(
     tweet = await create(
         session=session,
         model=Tweet,
-        data={"content": body.get("tweet_data"), "user_id": user.get("id")},
+        data={"content": tweet_data.tweet_data, "user_id": user.get("id")},
     )
 
     await image_to_tweet(
         session=session,
-        images_ids=body.get("tweet_media_ids"),
+        images_ids=tweet_data.tweet_media_ids,
         tweet_id=tweet.get("id"),
     )
     return ok_response(resp=tweet.get("id"), name="tweet_id")
@@ -63,7 +64,7 @@ async def like_tweet_view(
     return (
         ok_response()
         if liked_tweet
-        else error_response(msg="like delete (ツ)_/¯", err_type=400)
+        else error_response(msg="like delete (ツ)_/¯", err_type=200)
     )
 
 
@@ -77,7 +78,7 @@ async def delete_tweet_view(
         return error_response(msg="auth error ._.", err_type=401)
 
     tweet = await get_by_id(session=session, model=Tweet, id=id)
-    if user.get("id") == tweet.get("user_id"):
+    if user.get("id") == tweet.get("Tweet").user_id:
         await remove(session=session, model=Tweet, id=id)
         return ok_response(resp=None, name=None)
     return error_response(

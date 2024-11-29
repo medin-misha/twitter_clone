@@ -18,5 +18,6 @@ class CreatedUser(BaseUser):
 class OneUser(BaseModel):
     id: PositiveInt
     name: Annotated[str, MinLen(2), MaxLen(100)]
-    following: list | None
-    followers: list | None
+    following: list | None = None
+    followers: list | None = None
+    tweets: list | None = None

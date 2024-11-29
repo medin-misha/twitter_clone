@@ -31,14 +31,12 @@ async def auth_user_view(
 ) -> Dict[str, bool | OneUser]:
     api_key = request.headers.get("api-key")
     if api_key == "test":
-        return {"result": True, "user": {"id": "int", "name": "str"}}
+        return ok_response(resp={"id": 10**10, "name": "test"}, name="user")
     auth_user = await get_user_by_api_key(session=session, api_key=api_key)
+    if auth_user is None:
+        return error_response(msg="auth error ._.", err_type=401)
     user = await get_user_by_id(session=session, id=auth_user.get("id"))
-    return (
-        ok_response(resp=user, name="user")
-        if user is not None
-        else error_response(msg="auth error ._.", err_type=401)
-    )
+    return ok_response(resp=user, name="user")
 
 
 @router.api_route("/{id}/follow", methods=["POST", "DELETE"])
@@ -82,4 +80,4 @@ async def delete_user_view(
     id: int, session: AsyncSession = Depends(db_settings.session)
 ) -> Dict[str, bool | str]:
     await remove(session=session, model=User, id=id)
-    return ok_response(resp={"message": "deleted"}, name="deleted")
+    return ok_response(resp={"message": "deleted"})

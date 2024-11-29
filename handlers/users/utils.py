@@ -33,6 +33,7 @@ async def get_user_by_id(session: AsyncSession, id: int):
         select(User)
         .options(selectinload(User.followers))
         .options(selectinload(User.following))
+        .options(selectinload(User.tweets))
         .where(User.id == id)
     )
     user = result.scalar()
