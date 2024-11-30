@@ -1,6 +1,14 @@
 version: '3.9'
 
 services:
+  image_saver:
+    image: mishaloveshawerma/file-saver
+    container_name: file_saver
+    volumes:
+      - ./imgs/:/app/images
+    ports:
+     - 8000:80
+
   postgres:
     image: postgres:latest
     container_name: postgres_container
@@ -30,15 +38,15 @@ services:
     tty: true
     stdin_open: true
 
-  postgres_test:
-    image: postgres:latest
-    container_name: postgres_test_container
-    environment:
-      POSTGRES_USER: postgres_user
-      POSTGRES_PASSWORD: postgres_password
-      POSTGRES_DB: postgres_db
-    ports:
-      - "5430:5432"
+#  postgres_test:
+#    image: postgres:latest
+#    container_name: postgres_test_container
+#    environment:
+#      POSTGRES_USER: postgres_user
+#      POSTGRES_PASSWORD: postgres_password
+#      POSTGRES_DB: postgres_db
+#    ports:
+#      - "5430:5432"
 
 volumes:
   pgdata:
