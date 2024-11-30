@@ -20,10 +20,11 @@ async def create(
 async def get_by_id(
     session: AsyncSession, model: Image | User | Tweet, id: int
 ) -> dict | None:
-    stmt = select(model).options(selectinload("*")).where(model.id == id)
-    select_result: Result = await session.execute(stmt)
-    return select_result.mappings().one_or_none()
-
+    if 0 < id < 10**5:
+        stmt = select(model).options(selectinload("*")).where(model.id == id)
+        select_result: Result = await session.execute(stmt)
+        return select_result.mappings().one_or_none()
+    return None
 
 async def get_list(session: AsyncSession, model: Image | User | Tweet) -> List[dict]:
     stmt = select(model).options(selectinload("*")).order_by(model.id)
