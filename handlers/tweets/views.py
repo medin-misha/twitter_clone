@@ -18,7 +18,7 @@ from .utils import image_to_tweet, get_tweets, like_tweet
 router = APIRouter(prefix="/api/tweets", tags=["tweet"])
 
 
-@router.post("/")
+@router.post("")
 async def create_tweet_view(
     tweet_data: CreateTweet,
     request: Request,

@@ -23,7 +23,7 @@ async def image(client: AsyncClient, api_key: str) -> Response:
         headers={"api-key": api_key},
         files={
             "file": (
-                "anim/e.jpg",
+                "anime.jpg",
                 (
                     open(
                         "tests/imgs/anime.jpg",
@@ -42,7 +42,7 @@ async def image(client: AsyncClient, api_key: str) -> Response:
 
 async def tweet(client: AsyncClient, api_key: str, image_id: int) -> Response:
     tweet_response: Response = await client.post(
-        url="api/tweets/",
+        url="api/tweets",
         headers={"api-key": f"{api_key}"},
         json={"tweet_data": "ААААниме", "tweet_media_ids": [image_id]},
     )
