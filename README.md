@@ -1,28 +1,36 @@
 ## не жалкий клон твиттера
 Корпоративный клон твиттера с отсутствующей регистрацией. Вот как то так.
 ## как запустить? 
-Для начала нужно запустить postgres
+Запуск производиться невероятно просто. 
+Достаточно только активировать Docker если оно не активированно: 
+```commandline
+sudo systemctl enable docker
+```
+Команда для заупска всего этого дела:
 ```commandline
 docker-compose up --build
 ```
-все все настройки postgres лежат в docker-compose.yml под дерективой `enviroment`
-```yml
-   # (настройки по умолчанию)
-    environment:
-      POSTGRES_USER: postgres_user
-      POSTGRES_PASSWORD: postgres_password
-      POSTGRES_DB: postgres_db
-      PGDATA: /var/lib/postgresql/data/pgdata
+И нужно подождать пока проведуться миграции и после запуска можно будет заходить на 8000 порт и смотреть.
+
+Что бы создать user-a заходите в /docs
+## как зопустить в не docker
+всё очень тривеально. Заходим в /app копируем зависимости 
+```commandline
+pip install -r requirements.txt
 ```
-Далее нужно запустить миграции командой
+запускаем (предварительно незабыв убедиться что в .env файле есть ссылка на базу данных postgres)
+db_url в .env обязательное поле.
+по умолчанию стоит "postgresql+asyncpg://postgres_user:postgres_password@192.168.5.194:5432/postgres_db"
+
+так вот после запуска postgres(способ на ваш выбор) запускаем из /app миграции
 ```commandline
 alembic upgrade head
 ```
-и запустить само приложение
+и запускаем uvicorn
 ```commandline
-uvicorn "main:app" --reload
+uvicorn main:app --reload
 ```
-Готово.
+готово
 ## техническая документация
 ### main.py
 В main.py содержиться код для запуска и подключения роутеров которые лежат
